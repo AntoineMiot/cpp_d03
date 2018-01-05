@@ -184,16 +184,17 @@ static int to_int(String *this)
 static String *split_s(String *this, char separator)
 {
 	size_t i = 0;
-	String *res = 0;
-	String *tmp;
+	String *res = NULL;
 	char **tab = split_c(this, separator);
 
+	if (!tab)
+		return (NULL);
 	while (1) {
-		tmp = malloc((i + 1) * sizeof(*tmp));
-		memcpy(tmp, res, i * sizeof(*res));
-		free(res);
-		res = tmp;
+		res = realloc(res, (i + 1) * sizeof(*res));
+		if (!res)
+			return (NULL);
 		StringInit(&(res[i]), tab[i] ? tab[i] : "");
+		free(tab[i]);
 		if (!tab[i++])
 			return (res);
 	}
@@ -201,7 +202,24 @@ static String *split_s(String *this, char separator)
 
 static char **split_c(String *this, char separator)
 {
-	return NULL;
+	size_t i = 0;
+	char *str = strdup(this->str);
+	char *tok = str;
+	char **res = NULL;
+
+	while (strchr(tok, separator)) {
+		res = realloc(res, (i + 1) * sizeof(*res));
+		if (!res)
+			return (NULL);
+		res[i++] = strndup(tok, strchr(tok, separator) - tok);
+		tok = strchr(tok, separator) + 1;
+	}
+	res = realloc(res, (i + 2) * sizeof(*res));
+	if (res) {
+		res[i] = tok;
+		res[i + 1] = NULL;
+	}
+	return (res);
 }
 
 static void aff(String *this)
@@ -211,12 +229,22 @@ static void aff(String *this)
 
 static void join_s(String *this, char delim, String *tab)
 {
+	(void)this;
+	(void)delim;
+	(void)tab;
 }
 
 static void join_c(String *this, char delim, const char **tab)
 {
+	(void)this;
+	(void)delim;
+	(void)tab;
 }
 
 static String *substr(String *this, int offset, int length)
 {
+	(void)this;
+	(void)offset;
+	(void)length;
+	return (NULL);
 }

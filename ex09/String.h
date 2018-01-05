@@ -10,6 +10,9 @@
 
 	#include <stdlib.h>
 
+	#define MIN(a, b) ((a) < (b) ? (a) : (b))
+	#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 typedef struct string {
 	char *str;
 	void (*assign_s)(struct string *, const struct string *);

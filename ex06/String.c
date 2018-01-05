@@ -273,8 +273,19 @@ static void join_c(String *this, char delim, const char **tab)
 
 static String *substr(String *this, int offset, int length)
 {
-	(void)this;
-	(void)offset;
-	(void)length;
-	return (this);
+	char *str;
+	String *res = malloc(sizeof(*res));
+
+	offset = offset < 0 ? size(this) + offset : 0;
+	offset = length < 0 ? offset + length : offset;
+	length = length < 0 ? -length : length;
+	length = offset < 0 ? length + offset : length;
+	offset = offset < 0 ? 0 : offset;
+	length = offset > size(this) ? 0 : length;
+	offset = MIN(offset, size(this));
+	length = MIN(length, size(this) - offset);
+	str = strndup(this->str + offset, length);
+	StringInit(res, str);
+	free(str);
+	return (res);
 }

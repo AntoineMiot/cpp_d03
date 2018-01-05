@@ -124,14 +124,18 @@ static int compare_c(String *this, const char *str)
 
 static size_t copy(String *this, char *s, size_t n, size_t pos)
 {
+	strncpy(s, this->str + pos, n);
+	return (strlen(s));
 }
 
 static const char *c_str(String *this)
 {
+	return (this->str);
 }
 
 static int empty(String *this)
 {
+	return (*this->str ? -1 : 1);
 }
 
 static int find_s(String *this, const String *str, size_t pos)

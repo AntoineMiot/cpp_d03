@@ -34,6 +34,16 @@ static void join_s(String *, char, String *);
 static void join_c(String *, char, const char **);
 static String *substr(String *, int, int);
 
+static void string_init_2(String *this)
+{
+	this->split_s = split_s;
+	this->split_c = split_c;
+	this->aff = aff;
+	this->join_s = join_s;
+	this->join_c = join_c;
+	this->substr = substr;
+}
+
 void StringInit(String *this, const char *s)
 {
 	this->str = strdup(s);
@@ -54,12 +64,7 @@ void StringInit(String *this, const char *s)
 	this->insert_s = insert_s;
 	this->insert_c = insert_c;
 	this->to_int = to_int;
-	this->split_s = split_s;
-	this->split_c = split_c;
-	this->aff = aff;
-	this->join_s = join_s;
-	this->join_c = join_c;
-	this->substr = substr;
+	string_init_2(this);
 }
 
 void StringDestroy(String *this)
@@ -91,7 +96,8 @@ static void append_c(String *this, const char *ap)
 	res = malloc(strlen(this->str) + strlen(ap) + 1);
 	strcpy(res, this->str);
 	strcat(res, ap);
-	assign_c(this, res);
+	free(this->str);
+	this->str = res;
 }
 
 static char at(String *this, size_t pos)
@@ -125,8 +131,11 @@ static int compare_c(String *this, const char *str)
 
 static size_t copy(String *this, char *s, size_t n, size_t pos)
 {
+	if (n > strlen(this->str + pos))
+		n = strlen(this->str + pos);
 	strncpy(s, this->str + pos, n);
-	return (strlen(s));
+	s[n] = 0;
+	return (n);
 }
 
 static const char *c_str(String *this)
@@ -169,10 +178,12 @@ static void insert_c(String *this, size_t pos, const char *str)
 		res = malloc(strlen(this->str) + strlen(str) + 1);
 		if (!res)
 			return;
-		strncpy(res, this->str, pos);
+		strcpy(res, this->str);
+		res[pos] = 0;
 		strcat(res, str);
 		strcat(res, this->str + pos);
-		assign_c(this, res);
+		free(this->str);
+		this->str = res;
 	}
 }
 
@@ -195,8 +206,10 @@ static String *split_s(String *this, char separator)
 			return (NULL);
 		StringInit(&(res[i]), tab[i] ? tab[i] : "");
 		free(tab[i]);
-		if (!tab[i++])
+		if (!tab[i++]) {
+			free(tab);
 			return (res);
+		}
 	}
 }
 
@@ -218,9 +231,10 @@ static char **split_c(String *this, char separator)
 	}
 	res = realloc(res, (i + 2) * sizeof(*res));
 	if (res) {
-		res[i] = tok;
+		res[i] = strdup(tok);
 		res[i + 1] = NULL;
 	}
+	free(str);
 	return (res);
 }
 
@@ -262,5 +276,5 @@ static String *substr(String *this, int offset, int length)
 	(void)this;
 	(void)offset;
 	(void)length;
-	return (NULL);
+	return (this);
 }

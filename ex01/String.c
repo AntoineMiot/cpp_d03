@@ -5,6 +5,7 @@
 ** Sur le coté
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "./String.h"
@@ -182,14 +183,30 @@ static int to_int(String *this)
 
 static String *split_s(String *this, char separator)
 {
+	size_t i = 0;
+	String *res = 0;
+	String *tmp;
+	char **tab = split_c(this, separator);
+
+	while (1) {
+		tmp = malloc((i + 1) * sizeof(*tmp));
+		memcpy(tmp, res, i * sizeof(*res));
+		free(res);
+		res = tmp;
+		StringInit(&(res[i]), tab[i] ? tab[i] : "");
+		if (!tab[i++])
+			return (res);
+	}
 }
 
 static char **split_c(String *this, char separator)
 {
+	return NULL;
 }
 
 static void aff(String *this)
 {
+	printf("%s", this->str);
 }
 
 static void join_s(String *this, char delim, String *tab)

@@ -208,10 +208,12 @@ static char **split_c(String *this, char separator)
 	char **res = NULL;
 
 	while (strchr(tok, separator)) {
-		res = realloc(res, (i + 1) * sizeof(*res));
-		if (!res)
-			return (NULL);
-		res[i++] = strndup(tok, strchr(tok, separator) - tok);
+		if (strchr(tok, separator) - tok > 0) {
+			res = realloc(res, (i + 1) * sizeof(*res));
+			if (!res)
+				return (NULL);
+			res[i++] = strndup(tok, strchr(tok, separator) - tok);
+		}
 		tok = strchr(tok, separator) + 1;
 	}
 	res = realloc(res, (i + 2) * sizeof(*res));
@@ -229,16 +231,30 @@ static void aff(String *this)
 
 static void join_s(String *this, char delim, String *tab)
 {
-	(void)this;
-	(void)delim;
-	(void)tab;
+	size_t i = 0;
+	char delim_s[2] = { delim, 0 };
+
+	if (!tab[0].str[0])
+		return;
+	assign_s(this, tab[0]);
+	while (tab[++i].str[0]) {
+		append_c(this, delim_s);
+		append_s(this, tab[i]);
+	}
 }
 
 static void join_c(String *this, char delim, const char **tab)
 {
-	(void)this;
-	(void)delim;
-	(void)tab;
+	size_t i = 0;
+	char delim_s[2] = { delim, 0 };
+
+	if (!*tab)
+		return;
+	assign_c(this, *tab);
+	while (tab[++i]) {
+		append_c(this, delim_s);
+		append_c(this, tab[i]);
+	}
 }
 
 static String *substr(String *this, int offset, int length)

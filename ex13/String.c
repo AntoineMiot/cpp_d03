@@ -236,10 +236,10 @@ static void join_s(String *this, char delim, String *tab)
 
 	if (!tab[0].str[0])
 		return;
-	assign_s(this, tab[0]);
+	assign_s(this, &tab[0]);
 	while (tab[++i].str[0]) {
 		append_c(this, delim_s);
-		append_s(this, tab[i]);
+		append_s(this, &tab[i]);
 	}
 }
 

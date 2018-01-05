@@ -69,7 +69,7 @@ void StringDestroy(String *this)
 
 static void assign_s(String *this, const String *str)
 {
-	this->assign_c(this, str->str);
+	assign_c(this, str->str);
 }
 
 static void assign_c(String *this, const char *s)
@@ -80,7 +80,7 @@ static void assign_c(String *this, const char *s)
 
 static void append_s(String *this, const String *ap)
 {
-	this->append_c(this, ap->str);
+	append_c(this, ap->str);
 }
 
 static void append_c(String *this, const char *ap)
@@ -90,7 +90,7 @@ static void append_c(String *this, const char *ap)
 	res = malloc(strlen(this->str) + strlen(ap) + 1);
 	strcpy(res, this->str);
 	strcat(res, ap);
-	this->assign_c(this, res);
+	assign_c(this, res);
 }
 
 static char at(String *this, size_t pos)
@@ -102,7 +102,7 @@ static char at(String *this, size_t pos)
 
 static void clear(String *this)
 {
-	this->assign_c(this, "");
+	assign_c(this, "");
 }
 
 static int size(String *this)
@@ -114,7 +114,7 @@ static int size(String *this)
 
 static int compare_s(String *this, const String *str)
 {
-	return (this->compare_c(this, str->str));
+	return (compare_c(this, str->str));
 }
 
 static int compare_c(String *this, const char *str)
@@ -140,7 +140,7 @@ static int empty(String *this)
 
 static int find_s(String *this, const String *str, size_t pos)
 {
-	return (this->find_c(this, str->str, pos));
+	return (find_c(this, str->str, pos));
 }
 
 static int find_c(String *this, const char *str, size_t pos)
@@ -155,14 +155,29 @@ static int find_c(String *this, const char *str, size_t pos)
 
 static void insert_s(String *this, size_t pos, const String *str)
 {
+	insert_c(this, pos, str->str);
 }
 
 static void insert_c(String *this, size_t pos, const char *str)
 {
+	char *res;
+
+	if (pos > strlen(this->str))
+		append_c(this, str);
+	else {
+		res = malloc(strlen(this->str) + strlen(str) + 1);
+		if (!res)
+			return;
+		strncpy(res, this->str, pos);
+		strcat(res, str);
+		strcat(res, this->str + pos);
+		assign_c(this, res);
+	}
 }
 
 static int to_int(String *this)
 {
+	return (atoi(this->str));
 }
 
 static String *split_s(String *this, char separator)

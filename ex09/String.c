@@ -107,14 +107,19 @@ static void clear(String *this)
 
 static int size(String *this)
 {
+	if (!this->str)
+		return (-1);
+	return (strlen(this->str));
 }
 
 static int compare_s(String *this, const String *str)
 {
+	return (this->compare_c(this, str->str));
 }
 
 static int compare_c(String *this, const char *str)
 {
+	return (strcmp(this->str, str));
 }
 
 static size_t copy(String *this, char *s, size_t n, size_t pos)

@@ -140,10 +140,17 @@ static int empty(String *this)
 
 static int find_s(String *this, const String *str, size_t pos)
 {
+	return (this->find_c(this, str->str, pos));
 }
 
 static int find_c(String *this, const char *str, size_t pos)
 {
+	const char *needle;
+
+	if (pos > strlen(this->str))
+		return (-1);
+	needle = strstr(this->str + pos, str);
+	return (needle ? needle - this->str : -1);
 }
 
 static void insert_s(String *this, size_t pos, const String *str)
